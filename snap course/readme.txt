@@ -1,0 +1,2 @@
+使用了selenium、request、tesseract資料庫來對驗證碼進行辨識
+https://vocus.cc/article/621cfdb3fd8978000162a2e8
