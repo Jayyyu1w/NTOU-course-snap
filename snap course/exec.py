@@ -4,7 +4,6 @@ import base64
 import verify as vf
 import selenium.webdriver.support.ui as ui
 from selenium import webdriver
-from matplotlib import pyplot as plt
 from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.service import Service
 
