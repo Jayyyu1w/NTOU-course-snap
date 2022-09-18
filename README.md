@@ -5,3 +5,8 @@
 在course.txt內輸入課號
 <br>
 搶課結果會在result.txt內顯示
+
+---------------------------------------------
+
+驗證碼判斷模組 [ddddocr](https://github.com/sml2h3/ddddocr)
+搶課使用[selenium](https://www.selenium.dev/)
