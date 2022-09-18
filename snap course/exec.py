@@ -5,81 +5,93 @@ import verify as vf
 import selenium.webdriver.support.ui as ui
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.edge.service import Service
 
 os.chdir(os.path.dirname(__file__))
-driver = webdriver.Edge(service=Service("msedgedriver.exe"))
+driver = webdriver.Chrome(service=Service("chromedriver.exe"))
+ret_types = { 1 : '未找到課程', 2 : '課程不可選', 3 : '成功選取', 4 : '選取失敗', 5 : '人數已達上限', 6 : '系統錯誤'}
 
 def find_course(course):
     try:
-        driver.find_element_by_id('Q_COSID').send_keys(course)
-        driver.find_element_by_id('QUERY_COSID_BTN').click()
+        driver.execute_script(f"document.getElementById('Q_COSID').value = {course}")
+        driver.find_element(By.ID, 'QUERY_COSID_BTN').click()
         return True
     except Exception as ex:
-        print('Error!')
+        print('Error during find course')
         print(ex)
         print(f'error at {time.ctime()}')
         return False
 
-def getCourse():
-    f = open('course.txt','r')
-    fres = open('result.txt','w')
-    while True:
-        c = f.readline()
-        if c == "":
-            break
-        fres.write(f'{time.ctime()}  ')
-        if not find_course(c):
-            fres.write('System Error!')
-            break
-        suc = snapCourse()
-        if suc == 1:
-            fres.write(f'{c} snapped!')
-        elif suc == 2:
-            fres.write(f'{c} snap failed QQ')
-        elif suc == 3:
-            fres.write('System Error!')
-            break
+def choose_course():
+    try:
+        driver.find_element(By.ID, 'DataGrid1_ctl02_edit').click()
+        return True
+    except Exception as ex:
+        print('Error during choose course')
+        print(ex)
+        print(f'error at {time.ctime()}')
+        return False
+
+def snapCourse(c):
+    if not find_course(c):
+        return 1
+    time.sleep(0.8)
+    if not choose_course():
+        return 2
+    time.sleep(2.5)
+    return snapAlert()
 
 def alert_info():
     try:
-        Alert = driver.switch_to_alert()
+        Alert = driver.switch_to.alert
         text = Alert.text
         return Alert, text
     except:
         return None, 'none'
 
-def snapCourse():
-    alert_message = ['本科目設有檢查人數下限。選本課程，在未達下限人數前時無法退選，確定加選?', '年級不可加選！', '衝堂不可選！', '該課程已達人數上限']
+def snapAlert():
+    alert_message = ['本科目設有檢查人數下限。選本課程，在未達下限人數前時無法退選，確定加選?', '年級不可加選！', '衝堂不可選！']
     try:
-        driver.implicitly_wait(5)
-        driver.find_element_by_id('DataGrid1_ctl02_edit').click()
-        time.sleep(0.5)
         alert, text = alert_info()
         if text == alert_message[0]:
             alert.accept()
             time.sleep(0.5)
             alert, text = alert_info()
-            if text == alert_message[1] or text == alert_message[2]:
+            if alert is not None:
                 alert.accept()
-                return 2
+                return 4
             else:
-                return True
+                return 3
         elif text == alert_message[1] or text == alert_message[2]:
             alert.accept()
-            return 2
+            return 4
         else:
-            blk_text = text.split(':')
-            alert.accept()
+            blk_text = text.split('：')
+            if alert is not None:
+                alert.accept()
             if(len(blk_text) > 1):
-                return 2
+                return 5
             else:
-                return 1
+                return 3
     except Exception as ex:
-        print('Error!')
+        print('Error during snapping')
         print(ex)
         print(f'error at {time.ctime()}')
-        return 3
+        return 6
+
+def getCourse():
+    f = open('course.txt','r')
+    fres = open('result.txt','w')
+    course = f.readlines()
+    for c in course:
+        fres.write(f'{time.ctime()}\n')
+        ret = snapCourse(c)
+        if ret == 6:
+            break
+        else:
+            fres.write(f'{c} {ret_types[ret]}\n')
+        #driver.find_element(By.ID, 'QCLEAR_BTN1').click()
 
 def get_verifyimg():
     i = driver.execute_async_script("""
@@ -121,23 +133,26 @@ def link():
         driver.get('https://ais.ntou.edu.tw/Default.aspx')
         verimg = get_verifyimg()     #取得驗證碼圖片
         codes = vf.vercode(verimg)
-        driver.find_element_by_id('M_PW2').send_keys(codes)
-        driver.find_element_by_id('M_PW').send_keys(psw)
-        driver.find_element_by_id('M_PORTAL_LOGIN_ACNT').send_keys(acnt)
-        driver.switch_to.frame(driver.find_element_by_name('menuFrame'))         #切換框架
-        driver.find_element_by_id('Menu_TreeViewn1').click()
-        driver.find_element_by_id('Menu_TreeViewn29').click()
-        driver.find_element_by_id('Menu_TreeViewt39').click()
+        driver.find_element(By.ID, 'M_PW2').send_keys(codes)
+        driver.find_element(By.ID, 'M_PW').send_keys(psw)
+        driver.find_element(By.ID, 'M_PORTAL_LOGIN_ACNT').send_keys(acnt)
+        driver.switch_to.frame(driver.find_element(By.NAME, 'menuFrame'))         #切換框架
+        driver.find_element(By.ID, 'Menu_TreeViewn1').click()
+        driver.find_element(By.ID, 'Menu_TreeViewn29').click()
+        driver.find_element(By.ID, 'Menu_TreeViewt39').click()
         driver.switch_to.default_content()          #回到初始框架
-        driver.switch_to.frame(driver.find_element_by_name('mainFrame'))
-        print(f'connected at {time.ctime()}')
+        driver.switch_to.frame(driver.find_element(By.NAME, 'mainFrame'))
+        print(f'Connected at {time.ctime()}')
         return True
     except Exception as ex:
-        print('Error!')
+        print('Error during connecting')
         print(ex)
         print(f'error at {time.ctime()}')
         return False
 
 def disconnect():
+    driver.switch_to.default_content()
+    driver.switch_to.frame(driver.find_element(By.NAME, 'menuFrame'))
+    driver.find_element(By.ID, 'Menu_TreeViewt26').click()
     driver.close()
-    print('quit')
+    print('Quit')
