@@ -14,7 +14,8 @@ ret_types = { 1 : '未找到課程', 2 : '課程不可選', 3 : '成功選取', 
 
 def find_course(course):
     try:
-        driver.execute_script(f"document.getElementById('Q_COSID').value = {course}")
+        driver.execute_script("""var crs = argument[0];
+                                document.getElementById('Q_COSID').value = crs""", course)
         driver.find_element(By.ID, 'QUERY_COSID_BTN').click()
         return True
     except Exception as ex:
