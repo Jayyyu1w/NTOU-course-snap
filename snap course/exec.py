@@ -2,14 +2,12 @@ import os
 import time
 import base64
 import verify as vf
-import selenium.webdriver.support.ui as ui
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.edge.service import Service
 
 os.chdir(os.path.dirname(__file__))
-driver = webdriver.Chrome(service=Service("chromedriver.exe"))
+driver = webdriver.Edge(service=Service("msedgedriver.exe"))
 ret_types = { 1 : '未找到課程', 2 : '課程不可選', 3 : '成功選取', 4 : '選取失敗', 5 : '人數已達上限', 6 : '系統錯誤'}
 
 def find_course(course):
@@ -132,16 +130,16 @@ def link():
         psw=f.readline()
         driver.implicitly_wait(15)
         driver.get('https://ais.ntou.edu.tw/Default.aspx')
-        verimg = get_verifyimg()     #取得驗證碼圖片
+        verimg = get_verifyimg()                                                #取得驗證碼圖片
         codes = vf.vercode(verimg)
         driver.find_element(By.ID, 'M_PW2').send_keys(codes)
         driver.find_element(By.ID, 'M_PW').send_keys(psw)
         driver.find_element(By.ID, 'M_PORTAL_LOGIN_ACNT').send_keys(acnt)
-        driver.switch_to.frame(driver.find_element(By.NAME, 'menuFrame'))         #切換框架
+        driver.switch_to.frame(driver.find_element(By.NAME, 'menuFrame'))       #切換框架
         driver.find_element(By.ID, 'Menu_TreeViewn1').click()
-        driver.find_element(By.ID, 'Menu_TreeViewn29').click()
-        driver.find_element(By.ID, 'Menu_TreeViewt39').click()
-        driver.switch_to.default_content()          #回到初始框架
+        driver.find_element(By.ID, 'Menu_TreeViewn30').click()
+        driver.find_element(By.ID, 'Menu_TreeViewt40').click()
+        driver.switch_to.default_content()                                      #回到初始框架
         driver.switch_to.frame(driver.find_element(By.NAME, 'mainFrame'))
         print(f'Connected at {time.ctime()}')
         return True

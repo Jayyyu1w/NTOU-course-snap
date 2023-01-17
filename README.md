@@ -5,9 +5,18 @@
 在course.txt內輸入課號
 <br>
 搶課結果會在result.txt內顯示
+
+<b>注意 : 教學務系統內的id可能會有變動，若找不到課程可能得更改</b>
+<br>
+```python
+    driver.find_element(By.ID, 'Menu_TreeViewn30').click()  <-- 內部的 Menu_TreeView
+    driver.find_element(By.ID, 'Menu_TreeViewt40').click()  <-- 
+```
+
 ---------------------------------------------
 
-目前問題:第二堂以後的alert無法正確抓取
+目前問題: "本科目設有檢查人數下限。選本課程，在未達下限人數前時無法退選，確定加選?" 
+的下一個 alert 無法正確抓取
 
 ---------------------------------------------
 
