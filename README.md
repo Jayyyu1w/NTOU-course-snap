@@ -6,7 +6,8 @@
 <br>
 搶課結果會在result.txt內顯示
 
-<b>注意 : 教學務系統內的id可能會有變動，若找不到課程可能得更改</b>
+<b>注意：如果無法開啟，且嘗試更新瀏覽器的driver並重試一次</b>
+<b>注意：教學務系統內的id可能會有變動，若找不到課程可能得更改</b>
 <br>
 ```python
     driver.find_element(By.ID, 'Menu_TreeViewn30').click()  <-- 內部的 Menu_TreeView

@@ -12,7 +12,7 @@ ret_types = { 1 : '未找到課程', 2 : '課程不可選', 3 : '成功選取', 
 
 def find_course(course):
     try:
-        driver.execute_script("""var crs = argument[0];
+        driver.execute_script("""var crs = arguments[0];
                                 document.getElementById('Q_COSID').value = crs""", course)
         driver.find_element(By.ID, 'QUERY_COSID_BTN').click()
         return True
@@ -83,6 +83,7 @@ def getCourse():
     f = open('course.txt','r')
     fres = open('result.txt','w')
     course = f.readlines()
+    course = [c.strip() for c in course]    #去除換行符號
     for c in course:
         fres.write(f'{time.ctime()}\n')
         ret = snapCourse(c)
